@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#241710">
+  <meta name="robots" content="noindex, nofollow">
+  <title>ניהול פניות ולידים | בן לולו סיבוני – משרד עורכי דין</title>
+
+  <!-- Google Font: Heebo & Open Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="bhvuk.css">
+</head>
+<body>
+  <!-- Password Gate Overlay (Locks Dashboard until authenticated) -->
+  <section id="auth-gate" class="auth-gate" aria-labelledby="auth-title">
+    <div class="auth-card">
+      <img
+        src="logo.png"
+        alt="לוגו בן לולו סיבוני – משרד עורכי דין"
+        class="auth-logo"
+      >
+      <span class="auth-badge">אזור מנהלים מאובטח</span>
+      <h1 id="auth-title" class="auth-title">כניסה למערכת ניהול הפניות</h1>
+      <p class="auth-subtitle">בן לולו סיבוני · משרד עורכי דין</p>
+
+      <form id="auth-form" class="auth-form" novalidate>
+        <label for="auth-password" class="auth-label">סיסמת כניסה</label>
+        <div class="auth-input-wrap">
+          <input
+            id="auth-password"
+            type="password"
+            dir="ltr"
+            autocomplete="current-password"
+            class="auth-input"
+            placeholder="••••••••••"
+            required
+          >
+          <button type="button" id="auth-toggle-vis" class="auth-vis-btn" aria-label="הצגת סיסמה">הצג</button>
+        </div>
+        <p id="auth-error" class="auth-error" role="alert"></p>
+        <button type="submit" class="btn btn-gold auth-submit">כניסה למערכת</button>
+      </form>
+
+      <a href="index.html" class="auth-back-link">חזרה לשאלון הזכויות</a>
+    </div>
+  </section>
+
+  <!-- Protected Admin App Shell -->
+  <div id="admin-app" hidden>
+    <header class="admin-header" role="banner">
+      <div class="admin-header-inner">
+        <div class="admin-brand-group">
+          <a href="index.html" class="brand-link" aria-label="חזרה לשאלון">
+            <img
+              src="logo.png"
+              alt="לוגו בן לולו סיבוני"
+              class="admin-brand-logo"
+            >
+          </a>
+          <div class="admin-title-wrap">
+            <h1 class="admin-title">מערכת ניהול לידים ופניות</h1>
+            <span class="admin-subtitle">בן לולו סיבוני · משרד עורכי דין</span>
+          </div>
+        </div>
+
+        <div class="admin-header-actions">
+          <button type="button" id="btn-export-csv" class="btn btn-outline" title="ייצוא כל הלידים לקובץ אקסל / CSV">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>ייצוא ל־CSV</span>
+          </button>
+          <a href="index.html" class="btn btn-outline" target="_blank" rel="noopener noreferrer">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            <span>צפייה בשאלון</span>
+          </a>
+          <button type="button" id="logout-btn" class="btn btn-ghost" title="יציאה מהמערכת">יציאה</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="admin-main">
+      <!-- KPI Stats Grid -->
+      <section class="kpi-grid" aria-label="מדדי ביצוע">
+        <div class="kpi-card">
+          <span class="kpi-label">סה״כ פניות שנלכדו</span>
+          <div class="kpi-val" id="stat-total">0</div>
+          <span class="kpi-sub">בדיקות מלאות וחלקיות</span>
+        </div>
+        <div class="kpi-card highlight-green">
+          <span class="kpi-label">בדיקות שהושלמו</span>
+          <div class="kpi-val" id="stat-completed">0</div>
+          <span class="kpi-sub" id="stat-completed-rate">0% שיעור סיום</span>
+        </div>
+        <div class="kpi-card highlight-amber">
+          <span class="kpi-label">נטישות מוקדמות (ליד חלקי)</span>
+          <div class="kpi-val" id="stat-partial">0</div>
+          <span class="kpi-sub">פרטי קשר נשמרו לחזרה</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-label">פניות חדשות היום</span>
+          <div class="kpi-val" id="stat-today">0</div>
+          <span class="kpi-sub">24 שעות אחרונות</span>
+        </div>
+      </section>
+
+      <!-- Filter & Search Toolbar -->
+      <div class="admin-toolbar">
+        <div class="filter-tabs" role="tablist">
+          <button type="button" class="tab-btn is-active" data-filter="all">הכל (<span id="count-all">0</span>)</button>
+          <button type="button" class="tab-btn" data-filter="completed">הושלמו (<span id="count-completed">0</span>)</button>
+          <button type="button" class="tab-btn" data-filter="partial">חלקיים / נטישה (<span id="count-partial">0</span>)</button>
+          <button type="button" class="tab-btn" data-filter="new">חדשים לטיפול (<span id="count-new">0</span>)</button>
+        </div>
+
+        <div class="search-wrap">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input
+            id="search-input"
+            type="search"
+            class="search-input"
+            placeholder="חיפוש לפי שם, טלפון, עילה או מקור..."
+            aria-label="חיפוש לידים"
+          >
+        </div>
+      </div>
+
+      <!-- Leads Table Container -->
+      <div class="leads-container">
+        <div class="table-wrap" id="leads-table-wrap">
+          <table class="leads-table" aria-label="טבלת פניות">
+            <thead>
+              <tr>
+                <th scope="col">מועד פנייה</th>
+                <th scope="col">שם מלא</th>
+                <th scope="col">טלפון נייד</th>
+                <th scope="col">עילת פגיעה עיקרית</th>
+                <th scope="col">סטטוס בדיקה</th>
+                <th scope="col">מקור הגעה</th>
+                <th scope="col">סטטוס CRM</th>
+                <th scope="col">פעולות</th>
+              </tr>
+            </thead>
+            <tbody id="leads-tbody">
+              <!-- Rendered via bhvuk.js -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Mobile Card List View -->
+        <div id="leads-mobile-list" class="mobile-leads-list">
+          <!-- Rendered for mobile -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="empty-state" hidden>
+          <div class="empty-icon">📋</div>
+          <h3 id="empty-title" class="empty-title">אין עדיין פניות במערכת</h3>
+          <p id="empty-desc" class="empty-desc">ברגע שמשתמשים ימלאו את שאלון הזכויות, הפניות יופיעו כאן בזמן אמת.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Slide-Over Lead Details Drawer -->
+  <div id="drawer-backdrop" class="drawer-backdrop" hidden></div>
+  <aside id="lead-drawer" class="lead-drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" hidden>
+    <div class="drawer-header">
+      <div class="drawer-header-meta">
+        <span id="drawer-status-pill" class="status-badge">חדש</span>
+        <h2 id="drawer-title" class="drawer-title">פרטי הפנייה</h2>
+      </div>
+      <button type="button" id="drawer-close-btn" class="drawer-close" aria-label="סגירה">✕</button>
+    </div>
+    <div id="drawer-content" class="drawer-body">
+      <!-- Filled dynamically -->
+    </div>
+  </aside>
+
+  <!-- Direction-Aware Toast Notification -->
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="bhvuk.js"></script>
+</body>
+</html>
